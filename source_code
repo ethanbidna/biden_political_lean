@@ -1,0 +1,48 @@
+%matplotlib inline
+import matplotlib as mpl 
+import matplotlib.pyplot as plt
+plt.style.use('seaborn')
+import seaborn as sns
+import pandas as pd
+import plotly.graph_objects as go
+import numpy as np
+
+
+raw_data = '/Users/ethanbidna/Dropbox/Data Science/Data Projects/Biden Centrist Analysis/HSall_members.csv'
+score_data = pd.read_csv(raw_data)
+
+score_data = score_data[['congress','chamber','party_code','bioname','nominate_dim1','nokken_poole_dim1']]
+
+score_data = score_data.query('congress >= 93 & congress <= 111')
+score_data = score_data[score_data.party_code == 100]
+score_data['is_biden'] = score_data.bioname.str.contains('BIDEN')
+
+score_data_all = score_data[score_data.chamber != 'President']
+just_biden_all = score_data[score_data.is_biden == True]
+
+score_data_senate = score_data[score_data.chamber == 'Senate']
+just_biden_senate = score_data_senate[score_data_senate.is_biden == True]
+
+all_congress_trace = go.Box(y =score_data_all.nokken_poole_dim1,x = score_data_all.congress, name = 'Rest of Congress',marker_color = 'grey', hoverinfo = 'skip')
+biden_all_congress = go.Box(y =just_biden_all.nokken_poole_dim1,x = just_biden_all.congress,marker_color = 'red', name = 'Biden',hovertemplate = 'Biden Score = %{nokken_poole_dim1}')
+
+just_senate_trace = go.Box(y =score_data_senate.nokken_poole_dim1,x = score_data_senate.congress, name = 'Rest of Senate',marker_color = 'grey',visible = False, hoverinfo = 'skip')
+biden_just_senate = go.Box(y =just_biden_senate.nokken_poole_dim1,x = just_biden_senate.congress,marker_color = 'red', name = 'Biden',visible = False)
+
+
+data = [biden_all_congress, all_congress_trace, biden_just_senate, just_senate_trace]
+layout = go.Layout(
+                title = "Biden's Historical Partisanship Relative to Democrats", 
+                xaxis = dict(title = "Congress", tickmode = 'linear'),
+                yaxis = dict(title = "DW Nominate"),
+                updatemenus=[dict(buttons=list([
+                dict(visible = True, args=[{'visible': [True, True, False, False]}],label='Both Houses', method='restyle'),
+                dict(visible = True, args=[{'visible': [False, False, True, True]}],label='Senate Only', method='restyle'),
+
+                ]))])
+
+fig = go.Figure(data = data, layout = layout)
+fig.update_layout(hovermode="x")
+
+fig.show()
+
