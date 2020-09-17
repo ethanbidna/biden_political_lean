@@ -24,25 +24,34 @@ score_data_senate = score_data[score_data.chamber == 'Senate']
 just_biden_senate = score_data_senate[score_data_senate.is_biden == True]
 
 all_congress_trace = go.Box(y =score_data_all.nokken_poole_dim1,x = score_data_all.congress, name = 'Rest of Congress',marker_color = 'grey', hoverinfo = 'skip')
-biden_all_congress = go.Box(y =just_biden_all.nokken_poole_dim1,x = just_biden_all.congress,marker_color = 'red', name = 'Biden',hovertemplate = 'Biden Score = %{nokken_poole_dim1}')
+biden_all_congress = go.Box(y =just_biden_all.nokken_poole_dim1,x = just_biden_all.congress,marker_color = 'red', name = 'Biden', hovertemplate='Biden Score: %{just_biden_all.nokken_poole_dim1}')
+
+#still trying to get plotly to accept my custom markers, having trouble with this
 
 just_senate_trace = go.Box(y =score_data_senate.nokken_poole_dim1,x = score_data_senate.congress, name = 'Rest of Senate',marker_color = 'grey',visible = False, hoverinfo = 'skip')
 biden_just_senate = go.Box(y =just_biden_senate.nokken_poole_dim1,x = just_biden_senate.congress,marker_color = 'red', name = 'Biden',visible = False)
 
+lib_label = go.Scatter(x = [93],y = [1],mode = "markers+text",text = 'Most Conservative',textposition = 'middle right',line=dict(color="red"),showlegend = False,hoverinfo = 'skip')
 
-data = [biden_all_congress, all_congress_trace, biden_just_senate, just_senate_trace]
+cons_label = go.Scatter(x = [93],y = [-1],mode = "markers+text",text = 'Most Liberal',textposition = 'middle right',line=dict(color="blue"),showlegend = False,hoverinfo = 'skip')
+
+data = [biden_all_congress, all_congress_trace, biden_just_senate, just_senate_trace,lib_label, cons_label]
 layout = go.Layout(
                 title = "Biden's Historical Partisanship Relative to Democrats", 
                 xaxis = dict(title = "Congress", tickmode = 'linear'),
                 yaxis = dict(title = "DW Nominate"),
                 updatemenus=[dict(buttons=list([
-                dict(visible = True, args=[{'visible': [True, True, False, False]}],label='Both Houses', method='restyle'),
-                dict(visible = True, args=[{'visible': [False, False, True, True]}],label='Senate Only', method='restyle'),
+                dict(visible = True, args=[{'visible': [True, True, False, False, True, True]}],label='Both Houses', method='restyle'),
+                dict(visible = True, args=[{'visible': [False, False, True, True, True, True]}],label='Senate Only', method='restyle'),
 
                 ]))])
 
 fig = go.Figure(data = data, layout = layout)
 fig.update_layout(hovermode="x")
 
+
+
+
 fig.show()
+fig.write_html(r'/Users/ethanbidna/Dropbox/Data Science/Data Projects/Biden Centrist Analysis/biden_centrist.html')
 
