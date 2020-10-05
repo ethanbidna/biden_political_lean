@@ -6,6 +6,7 @@ import seaborn as sns
 import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
+import chart_studio.tools as tls
 
 
 raw_data = '/Users/ethanbidna/Dropbox/Data Science/Data Projects/Biden Centrist Analysis/HSall_members.csv'
@@ -13,7 +14,7 @@ score_data = pd.read_csv(raw_data)
 
 score_data = score_data[['congress','chamber','party_code','bioname','nominate_dim1','nokken_poole_dim1']]
 
-score_data = score_data.query('congress >= 93 & congress <= 111')
+score_data = score_data.query('congress >= 93 & congress < 111')
 score_data = score_data[score_data.party_code == 100]
 score_data['is_biden'] = score_data.bioname.str.contains('BIDEN')
 
@@ -54,4 +55,5 @@ fig.update_layout(hovermode="x")
 
 fig.show()
 fig.write_html(r'/Users/ethanbidna/Dropbox/Data Science/Data Projects/Biden Centrist Analysis/biden_centrist.html')
+
 
